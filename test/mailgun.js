@@ -3,6 +3,7 @@ require('dotenv').config({
 })
 const axios = require('axios')
 
+return console.log('mailgun sux lol')
 /*
 curl -s --user 'api:YOUR_API_KEY' \
     https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages \
