@@ -23,7 +23,8 @@ const min = 1000 * 60
 const n = Date.now()
 // 'Thu, 13 Oct 2011 18:02:00 GMT'
 // const deliverAt = new Date(n + (min * 10)).toUTCString()
-const deliverAt = 'Sun, 12 Sep 2021 05:20:03 GMT'
+// const deliverAt = 'Sun, 12 Sep 2021 05:20:03 GMT'
+const deliverAt = 'Sun, 12 Sep 2022 06:00:10 -0000'
 console.log(deliverAt)
 
 const html = [ // html works!
@@ -42,7 +43,8 @@ const params = {
   subject: 'test',
   text: 'success + deliver at ' + deliverAt + ' sent at ' + new Date().toUTCString(),
   // html,
-  'o:deliverytime': deliverAt
+  'o:deliverytime': deliverAt,
+  // 'o:deliverytime': {true: true},//'invalid date string' // it's not even reading this param?? Didn't throw an error...
 }
 console.log('params', params)
 
