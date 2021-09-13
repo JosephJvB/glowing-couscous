@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Respond to http requests at ApiGateway, send message on to SNS'
+
+Parameters:
+  DEBUG:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Runtime: nodejs14.x
+    Environment:
+      Variables:
+        DEBUG: !Ref DEBUG
+
+Resources:
+  HttpApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Cors:
+        AllowHeaders: "*"
+        AllowMethods: "*"
+        AllowOrigin: "*"
+
+  HttpSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: HttpSnsTopic
+      TopicName: HttpSnsTopic
+      Subscription:
+        - Endpoint: !GetAtt HttpSnsFunction.Arn
+          Protocol: lambda
+
+  HttpSnsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      Handler: function.handler
+      Runtime: nodejs14.x
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /email
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsEvent:
+          Type: Api
+          Properties:
+            Path: /email
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
+Outputs:
+  HttpSnsFunction:
+    Description: Respond to http requests at ApiGateway, send message on to SNS
+    Value: !GetAtt HttpSnsFunction.Arn

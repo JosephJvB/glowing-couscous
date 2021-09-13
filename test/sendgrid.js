@@ -37,13 +37,16 @@ function http() {
       name: 'joevb',
     },
     subject: 'Sending with SendGrid is Fun',
-    content: [{
-      type: 'text/plain',
-      value: `and easy to do anywhere, even with Node.js sent at ${new Date().toLocaleString()} to deliver at ${new Date(sendAt * 1000).toLocaleString()} from http`,
-    }, {
-      type: 'text/html',
-      value: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    }],
+    content: [
+      {
+        type: 'text/plain',
+        value: `and easy to do anywhere, even with Node.js sent at ${new Date().toLocaleString()} to deliver at ${new Date(sendAt * 1000).toLocaleString()} from http`,
+      },
+      // {
+      //   type: 'text/html',
+      //   value: '<strong>and easy to do anywhere, even with Node.js</strong>',
+      // }
+  ],
     send_at: sendAt
   }
   axios({
