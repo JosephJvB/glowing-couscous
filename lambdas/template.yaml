@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: 'Respond to http requests at ApiGateway, send message on to SNS'
+Description: 'Lennies api, its hers'
 
 Parameters:
   DEBUG:
@@ -32,18 +32,14 @@ Resources:
   HttpSnsTopic:
     Type: AWS::SNS::Topic
     Properties:
-      DisplayName: HttpSnsTopic
-      TopicName: HttpSnsTopic
-      Subscription:
-        - Endpoint: !GetAtt HttpSnsFunction.Arn
-          Protocol: lambda
+      DisplayName: LennieSns
+      TopicName: LennieSns
 
   HttpSnsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src
-      Handler: http-sns.handler
-      Runtime: nodejs14.x
+      Handler: functions/http-sns.handler
       Events:
         PostEvent:
           Type: Api
@@ -58,7 +54,48 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  SnsS3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      Handler: functions/sns-s3.handler
+      Events:
+        SnsEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref HttpSnsTopic
+
+  SendEmailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      Handler: functions/send-email.handler
+      Events:
+        SnsEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref HttpSnsTopic
+        CronEvent:
+          Type: Schedule
+          Properties:
+            Name: "2DayEmailScheduler"
+            Description: "Once every 2 days send pending emails if within 3 days of send"
+            Schedule: "cron(0 12 */2 * ? *)"
+            Input: '{"CloudWatchEvent": true}'
+
 Outputs:
+  HttpApiGateway:
+    Description: ApiGateway between front end requests and backend lambda
+    Value: !Ref HttpApiGateway
+  HttpSnsTopic:
+    Description: Sns topic to decouple Http request from backend processes
+    Value: !Ref HttpSnsTopic
   HttpSnsFunction:
     Description: Respond to http requests at ApiGateway, send message on to SNS
-    Value: !GetAtt HttpSnsFunction.Arn
+    Value: !Ref HttpSnsFunction
+  SnsS3Function:
+    Description: Write all email requests to json file in S3
+    Value: !Ref SnsS3Function
+  SendEmailFunction:
+    Description: Send email at request, or save to json. Also triggered by Schedule to send saved emails.
+    Value: !Ref SendEmailFunction

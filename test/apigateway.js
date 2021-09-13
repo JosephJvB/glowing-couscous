@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const url = 'https://pkevjfve33.execute-api.ap-southeast-2.amazonaws.com/v1/email'
+const url = 'https://toirpbw29h.execute-api.ap-southeast-2.amazonaws.com/v1/email'
 
 axios({
   method: 'post',
