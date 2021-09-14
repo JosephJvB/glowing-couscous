@@ -27,3 +27,11 @@ Create manually:
   - Resave pending.json, removing all sent items
 
 https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-api.html
+
+actually hold up I should do these in typescript for SURE
+- Issue with building sam / tsc projects
+- Tsc turns .ts -> /dist/.js, but doesn't include node_modules
+- Sam includes node_modules
+- I need both? I need both, and a copy package.json
+
+- There are some more complex solution that package node_modules into layers, use makefiles and all sorts but I think this is fine for now.

@@ -38,7 +38,7 @@ Resources:
   HttpSnsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: functions/http-sns.handler
       Events:
         PostEvent:
@@ -57,7 +57,7 @@ Resources:
   SnsS3Function:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: functions/sns-s3.handler
       Events:
         SnsEvent:
@@ -68,7 +68,7 @@ Resources:
   SendEmailFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: functions/send-email.handler
       Events:
         SnsEvent:

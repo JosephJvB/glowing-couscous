@@ -1,15 +1,19 @@
-const { SNS } = require('aws-sdk')
+import { SNS } from 'aws-sdk'
+import axios from 'axios'
 
 const sns = new SNS({
   region: 'ap-southeast-2'
 })
 
-exports.handler = async event => {
+
+export const handler = async event => {
   console.log('-------------')
   console.log('--- event ---')
   console.log(JSON.stringify(event))
   console.log('--- body ---')
   console.log(JSON.stringify(event.body))
+
+  const x = axios
 
   return {
     statusCode: 200,

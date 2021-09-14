@@ -1,0 +1,25 @@
+{
+  "extends": "./lambdas/node_modules/@tsconfig/node14/tsconfig.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 14",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "module": "CommonJS",
+    "target": "ES2020",
+    "strict": false,
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "outDir": "dist",
+    "rootDir": "lambdas",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": [
+      "lambdas/node_modules/@types"
+    ]
+  },
+  "include": ["lambdas/**/*", "lambdas/package.json"],
+  "exclude": ["lambdas/node_modules", "**/*.spec.ts"]
+}
