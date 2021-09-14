@@ -31,6 +31,8 @@ Globals:
         sns_arn: !Ref HttpSnsTopic
 
 Resources:
+  # review: deployments were creating new gateways - new urls
+  # I think it's because the resources were changing, adding roles/permissions?
   HttpApiGateway:
     Type: AWS::Serverless::Api
     Properties:
