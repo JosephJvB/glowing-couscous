@@ -59,7 +59,7 @@ export class EmailService {
         continue
       }
       if (request.shouldSend) {
-        await this.emailClient.scheduleEmail(request)
+        await this.emailClient.scheduleEmail(request.sendGridRequest)
       } else {
         unsetRequests.push(request)
       }

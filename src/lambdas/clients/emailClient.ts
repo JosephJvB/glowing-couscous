@@ -1,24 +1,24 @@
 import axios from 'axios'
 import { sendMailUrl } from '../models/const';
-import { EmailRequest } from '../models/emailRequest';
-
-const url = 'https://api.sendgrid.com/v3/mail/send'
+import { ISendGridRequest } from '../models/emailRequest';
 
 export class EmailClient {
   constructor() {}
 
-  async scheduleEmail(request: EmailRequest): Promise<void> {
+  async scheduleEmail(request: ISendGridRequest): Promise<void> {
     console.log(
       'EmailClient.scheduleEmail',
       JSON.stringify(request)
     )
-    console.error('no email sent: havent mapped to sendgrid request data yet')
-    await new Promise(r => setTimeout(r, 1000))
-    // await axios({
-    //   method: 'post',
-    //   url: sendMailUrl,
-    //   data: request.sendGridRequest
-    // })
+
+    await axios({
+      method: 'post',
+      url: sendMailUrl,
+      data: request,
+      headers: {
+        Authorization: this.auth
+      }
+    })
   }
 
   get auth(): string {

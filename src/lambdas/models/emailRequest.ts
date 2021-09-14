@@ -30,8 +30,65 @@ export class EmailRequest {
     const diff = sendAtSec - nowSec
     return diff < maxScheduletime
   }
-  get sendGridRequest() {
-    throw new Error('EmailRequest.sendGridRequest not ready!')
-    return {}
+  get sendGridRequest(): ISendGridRequest {
+    const sgr = {} as ISendGridRequest
+    sgr.personalizations = []
+    sgr.subject = this.subject
+
+    // set to, from, and reply_to
+    const sgrUser: SGRUser = {
+      email: this.email
+      // name: todo
+    }
+    sgr.from = sgrUser
+    sgr.reply_to = sgrUser
+    sgr.personalizations.push({
+      to: [sgrUser]
+    })
+
+    // schedule at time, or send right away (max 3 days)
+    if (this.sendAt) {
+      sgr.send_at = new Date(this.sendAt).getTime() / 1000
+    }
+
+    // set content
+    if (this.templateId) {
+      sgr.template_id = this.templateId
+      sgr.personalizations.push({
+        dynamic_template_data: {
+          bodyText: this.bodyText
+        }
+      })
+    } else {
+      sgr.content = [{
+        type: 'text/plain',
+        value: this.bodyText
+      }]
+    }
+    return sgr
   }
+}
+
+// https://docs.sendgrid.com/api-reference/mail-send/mail-send
+export interface SGRUser {
+  email: string;
+  name?: string;
+}
+export interface SGRContent {
+  type: string;
+  value: string;
+}
+export interface SGRTemplateData {
+  [key: string]: string
+}
+export interface ISendGridRequest {
+    subject: string
+    send_at?: number
+    template_id?: string
+    from: SGRUser
+    reply_to: SGRUser
+    personalizations: {
+      [key: string]: SGRUser[] | SGRTemplateData
+    }[]
+    content?: SGRContent[]
 }
