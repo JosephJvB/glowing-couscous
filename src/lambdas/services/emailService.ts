@@ -55,6 +55,9 @@ export class EmailService {
     const unsetRequests: EmailRequest[] = []
     for (const req of requests) {
       const request = new EmailRequest(req)
+      if (!request.isValid) {
+        continue
+      }
       if (request.shouldSend) {
         await this.emailClient.scheduleEmail(request)
       } else {

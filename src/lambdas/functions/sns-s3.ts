@@ -29,6 +29,13 @@ export const handler = async (event: SNSEvent): Promise<void> => {
         incomingRequests.push(request)
       }
     }
+    console.log(
+      `incomingRequests.length=${incomingRequests.length}`
+    )
+
+    if(incomingRequests.length == 0) {
+      return console.warn('sns-s3.handler exiting, no valid incoming records')
+    }
 
     console.log(
       's3.getObject',
