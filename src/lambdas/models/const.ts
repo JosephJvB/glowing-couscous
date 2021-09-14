@@ -1,0 +1,5 @@
+export const s3Bucket = 'jvb-code'
+export const allRequestsKey = 'email-data/all.json'
+export const pendingRequestsKey = 'email-data/pending.json'
+export const sendGridBaseUrl = 'https://api.sendgrid.com'
+export const sendMailUrl = sendGridBaseUrl + '/v3/mail/send'

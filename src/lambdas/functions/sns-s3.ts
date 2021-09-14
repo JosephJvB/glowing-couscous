@@ -1,13 +1,11 @@
 import { SNSEvent } from 'aws-lambda'
 import { S3 } from 'aws-sdk'
+import { allRequestsKey, s3Bucket } from '../models/const'
 import { EmailRequest } from '../models/emailRequest'
 
 const s3 = new S3({
   region: 'ap-southeast-2'
 })
-
-const bucket = 'jvb-code'
-const key = 'email-data/all.json'
 
 export const handler = async (event: SNSEvent): Promise<void> => {
   try {
@@ -18,8 +16,8 @@ export const handler = async (event: SNSEvent): Promise<void> => {
       `records.length=${event.Records.length}`
     )
 
-    const incomingRecords: EmailRequest[] = []
-    for(let i = 0; i < event.Records.length; i++) {
+    const incomingRequests: EmailRequest[] = []
+    for (let i = 0; i < event.Records.length; i++) {
       const record = event.Records[i]
       console.log(
         'record n.' + i,
@@ -28,44 +26,37 @@ export const handler = async (event: SNSEvent): Promise<void> => {
       const data: EmailRequest = JSON.parse(record.Sns.Message)
       const request = new EmailRequest(data)
       if (request.isValid) {
-        incomingRecords.push(data)
+        incomingRequests.push(request)
       }
     }
 
-    let currentRecords: EmailRequest[] = []
-    try {
-      console.log(
-        's3.getObject',
-        `bucket=${bucket}`,
-        `key=${key}`
-      )
-      const obj = await s3.getObject({
-        Bucket: bucket,
-        Key: key
-      }).promise()
-      currentRecords = JSON.parse(obj.Body.toString()) as EmailRequest[]
-    } catch {
-      console.error('failed to load current records from json file')
-      console.error(
-        `bucket=${bucket}`,
-        `key=${key}`
-      )
-    }
     console.log(
-      `currentRecords.length=${currentRecords.length}`
+      's3.getObject',
+      `bucket=${s3Bucket}`,
+      `key=${allRequestsKey}`
     )
-    const allRecords = [...currentRecords, ...incomingRecords]
+    const obj = await s3.getObject({
+      Bucket: s3Bucket,
+      Key: allRequestsKey
+    }).promise()
+    const currentAllRequests = JSON.parse(obj.Body.toString()) as EmailRequest[]
+    console.log(
+      `currentAllRequests.length=${currentAllRequests.length}`
+    )
+
+    const allRecords = [...currentAllRequests, ...incomingRequests]
     console.log(
       `allRecords.length=${allRecords.length}`
     )
+
     console.log(
       's3.putObject',
-      `bucket=${bucket}`,
-      `key=${key}`
+      `bucket=${s3Bucket}`,
+      `key=${allRequestsKey}`
     )
     await s3.putObject({
-      Bucket: bucket,
-      Key: key,
+      Bucket: s3Bucket,
+      Key: allRequestsKey,
       Body: JSON.stringify(allRecords),
       ContentType: 'application/json'
     }).promise()
