@@ -12,8 +12,14 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('-------------')
     console.log('--- event ---')
     console.log(JSON.stringify(event))
+    console.log('--- method ---')
+    console.log(event.httpMethod)
     console.log('--- body ---')
     console.log(event.body)
+
+    if (event.httpMethod.toLowerCase() == 'options') {
+      return new HttpSuccess()
+    }
 
     console.log(
       'sns.publish()',
