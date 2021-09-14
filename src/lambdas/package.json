@@ -7,13 +7,14 @@
     "build.tsc": "tsc -p ../tsconfig.json && cp ./package.json ../dist",
     "build.sam": "sam build -t ../template.yaml -b ../.aws-sam",
     "build": "npm run build.tsc && npm run build.sam",
-    "deploy": "sam deploy -t ../template.yaml --stack-name lennie --s3-bucket jvb-code --s3-prefix SAM --profile joe --region ap-southeast-2 --capabilities CAPABILITY_IAM"
+    "deploy": "sam deploy -t ../.aws-sam/template.yaml --stack-name lennie --s3-bucket jvb-code --s3-prefix SAM --profile joe --region ap-southeast-2 --capabilities CAPABILITY_IAM"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
+    "@types/aws-lambda": "^8.10.83",
     "@types/node": "^16.9.1",
     "aws-sdk": "^2.987.0"
   },

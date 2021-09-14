@@ -9,6 +9,16 @@ Parameters:
     AllowedValues:
       - "true"
       - "false"
+  TopicName:
+    Type: String
+    Default: LennieSns
+    AllowedValues:
+      - LennieSns
+  BucketName:
+    Type: String
+    Default: jvb-code
+    AllowedValues:
+      - jvb-code
 
 Globals:
   Function:
@@ -18,6 +28,7 @@ Globals:
     Environment:
       Variables:
         DEBUG: !Ref DEBUG
+        sns_arn: !Ref HttpSnsTopic
 
 Resources:
   HttpApiGateway:
@@ -32,14 +43,20 @@ Resources:
   HttpSnsTopic:
     Type: AWS::SNS::Topic
     Properties:
-      DisplayName: LennieSns
-      TopicName: LennieSns
+      DisplayName: !Ref TopicName
+      TopicName: !Ref TopicName
 
+  # Permissions:
+  # https://aws.amazon.com/premiumsupport/knowledge-center/lambda-sam-template-permissions/
+  # https://github.com/aws/serverless-application-model/blob/develop/samtranslator/policy_templates_data/policy_templates.json
   HttpSnsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
       Handler: functions/http-sns.handler
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref TopicName
       Events:
         PostEvent:
           Type: Api
@@ -59,6 +76,9 @@ Resources:
     Properties:
       CodeUri: ./dist
       Handler: functions/sns-s3.handler
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
       Events:
         SnsEvent:
           Type: SNS
@@ -70,6 +90,9 @@ Resources:
     Properties:
       CodeUri: ./dist
       Handler: functions/send-email.handler
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
       Events:
         SnsEvent:
           Type: SNS
