@@ -28,6 +28,10 @@ Create manually:
 
 https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-api.html
 
+email templates: https://sendgrid.com/dynamic_templates
+sendgrid email template didn't load properly in gmail, or outlook. I dunno!
+Prefer to diy
+
 actually hold up I should do these in typescript for SURE
 - Issue with building sam / tsc projects
 - Tsc turns .ts -> /dist/.js, but doesn't include node_modules

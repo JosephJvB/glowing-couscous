@@ -1,6 +1,7 @@
 require('dotenv').config({
-  path: __dirname + '/../SendEmail/.env'
+  path: __dirname + '/../src/lambdas/.env'
 })
+const templateId = 'd-c9fb10c0dd984cd49da8e209cd032b94'
 // using Twilio SendGrid's v3 Node.js Library
 // https://github.com/sendgrid/sendgrid-nodejs
 // https://docs.sendgrid.com/api-reference/mail-send/mail-send
@@ -12,12 +13,14 @@ const nowSecs = Date.now() / 1000
 const minsOffset = 60 * 2
 const sendAt = Math.round(nowSecs + minsOffset)
 
-// sendGridApi()
-http()
+sendGridApi()
+// http()
 
 function http() {
   const axios = require('axios')
   const msg = {
+    // send_at: sendAt,
+    template_id: templateId,
     personalizations: [{
       // from: {
       //   email: 'joevanbo@gmail.com',
@@ -27,6 +30,10 @@ function http() {
         email: 'joevanbo@gmail.com',
         name: 'joevb to name',
       }],
+      dynamic_template_data: {
+        firstName: 'joeee',
+        someothervar: 'eeee'
+      }
     }],
     from: {
       email: 'joevanbo@gmail.com',
@@ -46,8 +53,7 @@ function http() {
       //   type: 'text/html',
       //   value: '<strong>and easy to do anywhere, even with Node.js</strong>',
       // }
-  ],
-    send_at: sendAt
+    ]
   }
   axios({
     method: 'post',
@@ -68,12 +74,23 @@ function http() {
 }
 function sendGridApi () {
   const msg = {
+    // send_at: sendAt
+    template_id: templateId,
     to: 'joevanbo@gmail.com',
     from: 'joevanbo@gmail.com',
     subject: 'Sending with SendGrid is Fun',
     text: `and easy to do anywhere, even with Node.js sent at ${new Date().toLocaleString()} to deliver at ${new Date(sendAt * 1000).toLocaleString()}`,
     // html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    send_at: sendAt
+    personalizations: [{
+      to: [{
+        email: 'joevanbo@gmail.com',
+        name: 'joevb to name',
+      }],
+      dynamic_template_data: {
+        firstName: 'joeee',
+        someothervar: 'eeee'
+      }
+    }]
   }
   msg.text + ' from sendGridApi'
   const sgMail = require('@sendgrid/mail')
