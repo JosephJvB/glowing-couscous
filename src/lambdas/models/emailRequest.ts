@@ -57,7 +57,8 @@ export class EmailRequest {
     if (this.templateId) {
       sgr.template_id = this.templateId
       psn.dynamic_template_data = {
-        bodyText: this.bodyText
+        bodyText: this.bodyText,
+        subject: this.subject
       }
     } else {
       sgr.content = [{
@@ -86,6 +87,7 @@ export interface Personalization {
   to: SGRUser[]
   dynamic_template_data?: {
     bodyText: string
+    subject: string
   }
 }
 export interface ISendGridRequest {
