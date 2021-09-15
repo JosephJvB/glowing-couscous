@@ -19,6 +19,11 @@ Parameters:
     Default: jvb-code
     AllowedValues:
       - jvb-code
+  SendGridApiKey:
+    Type: String
+    Default: '{{resolve:ssm:sendgrid_apikey:1}}'
+    AllowedValues:
+      - '{{resolve:ssm:sendgrid_apikey:1}}'
 
 Globals:
   Function:
@@ -90,6 +95,9 @@ Resources:
   SendEmailFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Environment:
+        Variables:
+          sendgrid_apikey: !Ref SendGridApiKey
       CodeUri: ./dist
       Handler: functions/send-email.handler
       Policies:

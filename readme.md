@@ -1,5 +1,11 @@
 # Backend
 
+Must set "FROM" sendgrid field to a registered sender identity:
+Create some gmail futureme@gmail.com and register that one
+```js
+const error = 'The from address does not match a verified Sender Identity. Mail cannot be sent until this error is resolved. Visit https://sendgrid.com/docs/for-developers/sending-email/sender-identity/ to see the Sender Identity requirements',
+```
+
 Each lambda has it's own SAM template, which deploys lambda code only & handles roles / permissions
 Create manually:
   - ApiGateway
