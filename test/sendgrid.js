@@ -13,8 +13,8 @@ const nowSecs = Date.now() / 1000
 const minsOffset = 60 * 2
 const sendAt = Math.round(nowSecs + minsOffset)
 
-sendGridApi()
-// http()
+// sendGridApi()
+http()
 
 function http() {
   const axios = require('axios')
@@ -22,10 +22,6 @@ function http() {
     // send_at: sendAt,
     template_id: templateId,
     personalizations: [{
-      // from: {
-      //   email: 'joevanbo@gmail.com',
-      //   name: 'joevb',
-      // },
       to: [{
         email: 'joevanbo@gmail.com',
         name: 'joevb to name',
@@ -43,17 +39,17 @@ function http() {
       email: 'joevanbo@gmail.com',
       name: 'joevb',
     },
-    subject: 'Sending with SendGrid is Fun',
-    content: [
-      {
-        type: 'text/plain',
-        value: `and easy to do anywhere, even with Node.js sent at ${new Date().toLocaleString()} to deliver at ${new Date(sendAt * 1000).toLocaleString()} from http`,
-      },
-      // {
-      //   type: 'text/html',
-      //   value: '<strong>and easy to do anywhere, even with Node.js</strong>',
-      // }
-    ]
+    subject: 'template retest',
+    // content: [
+    //   {
+    //     type: 'text/plain',
+    //     value: `and easy to do anywhere, even with Node.js sent at ${new Date().toLocaleString()} to deliver at ${new Date(sendAt * 1000).toLocaleString()} from http`,
+    //   },
+    //   {
+    //     type: 'text/html',
+    //     value: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    //   }
+    // ]
   }
   axios({
     method: 'post',

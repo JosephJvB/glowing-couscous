@@ -44,12 +44,9 @@ export class EmailRequest {
     }
     sgr.from = sender
     sgr.reply_to = sender
-    sgr.personalizations.push({
-      to: [{
-        email: this.email,
-        // name: todo
-      }]
-    })
+    const psn: Personalization = {
+      to: [{ email: this.email }]
+    }
 
     // schedule at time, or send right away (max 3 days)
     if (this.sendAt) {
@@ -59,32 +56,37 @@ export class EmailRequest {
     // set content
     if (this.templateId) {
       sgr.template_id = this.templateId
-      sgr.personalizations.push({
-        dynamic_template_data: {
-          bodyText: this.bodyText
-        }
-      })
+      psn.dynamic_template_data = {
+        bodyText: this.bodyText
+      }
     } else {
       sgr.content = [{
         type: 'text/plain',
         value: this.bodyText
       }]
     }
+    sgr.personalizations.push(psn)
     return sgr
   }
 }
 
 // https://docs.sendgrid.com/api-reference/mail-send/mail-send
 export interface SGRUser {
-  email: string;
-  name?: string;
+  email: string
+  name?: string
 }
 export interface SGRContent {
-  type: string;
-  value: string;
+  type: string
+  value: string
 }
 export interface SGRTemplateData {
   [key: string]: string
+}
+export interface Personalization {
+  to: SGRUser[]
+  dynamic_template_data?: {
+    bodyText: string
+  }
 }
 export interface ISendGridRequest {
     subject: string
@@ -92,8 +94,6 @@ export interface ISendGridRequest {
     template_id?: string
     from: SGRUser
     reply_to: SGRUser
-    personalizations: {
-      [key: string]: SGRUser[] | SGRTemplateData
-    }[]
+    personalizations: Personalization[]
     content?: SGRContent[]
 }

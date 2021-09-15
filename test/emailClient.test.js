@@ -7,7 +7,7 @@ const { EmailRequest } = require('../src/.aws-sam/SendEmailFunction/models/email
 const e = new EmailClient()
 console.log(e, process.env.sendgrid_apikey)
 const d = {
-  // templateId: string
+  templateId: 'd-c9fb10c0dd984cd49da8e209cd032b94',
   email: 'joevanbo@gmail.com',
   // sendAt: number
   subject: 'yooo',
