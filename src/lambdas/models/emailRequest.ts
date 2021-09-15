@@ -1,3 +1,5 @@
+import { sendGridSender } from "./const"
+
 const daySec = 60 * 60 * 24
 const maxScheduletime = daySec * 3
 
@@ -35,15 +37,18 @@ export class EmailRequest {
     sgr.personalizations = []
     sgr.subject = this.subject
 
-    // set to, from, and reply_to
-    const sgrUser: SGRUser = {
-      email: this.email
+    // sender must be sendgrid verified
+    const sender: SGRUser = {
+      email: sendGridSender
       // name: todo
     }
-    sgr.from = sgrUser
-    sgr.reply_to = sgrUser
+    sgr.from = sender
+    sgr.reply_to = sender
     sgr.personalizations.push({
-      to: [sgrUser]
+      to: [{
+        email: this.email,
+        // name: todo
+      }]
     })
 
     // schedule at time, or send right away (max 3 days)
