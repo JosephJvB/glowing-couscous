@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { SNS } from 'aws-sdk'
+import { EmailRequest } from '../models/emailRequest'
 import { HttpFailure, HttpSuccess } from '../models/httpResponse'
 
 const sns = new SNS({
@@ -21,6 +22,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       return new HttpSuccess()
     }
 
+    const emailRequest = new EmailRequest(JSON.parse(event.body))
+    emailRequest._ts = Date.now()
+    if (!emailRequest.isValid) {
+      return new HttpFailure(JSON.stringify({
+        message: 'Invalid email request',
+        data: emailRequest
+      }))
+    }
+
     console.log(
       'sns.publish()',
       `TopicArn=${process.env.sns_arn}`
@@ -32,17 +42,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }).promise()
     console.log('sns.publish: success')
   
-    return new HttpSuccess(
-      JSON.stringify({ test: 'success!' })
-    )
+    return new HttpSuccess(JSON.stringify({
+      message: 'success',
+      ts: emailRequest._ts
+    }))
   } catch (e) {
     console.error(e)
     console.error('http-sns.handler failed')
-    return new HttpFailure(
-      JSON.stringify({
-        test: 'failure!',
-        error: e
-      })
-    )
+    return new HttpFailure(e)
   }
 }

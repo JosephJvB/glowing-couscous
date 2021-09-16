@@ -9,12 +9,14 @@ export class EmailRequest {
   sendAt: number
   subject: string
   bodyText: string
+  _ts: number
   constructor(data: EmailRequest) {
     this.templateId = data.templateId
     this.email = data.email
     this.sendAt = data.sendAt
     this.subject = data.subject
     this.bodyText = data.bodyText
+    this._ts = data._ts
   }
 
   get isValid(): boolean {
