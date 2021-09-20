@@ -158,9 +158,6 @@ Resources:
             RestApiId: !Ref HttpApiGateway
 
 Outputs:
-  HttpApiGateway:
-    Description: ApiGateway between front end requests and backend lambda
-    Value: !Ref HttpApiGateway
   HttpSqsQueue:
     Description: sqs queue to decouple Http request from backend processes
     Value: !Ref HttpSqsQueue
@@ -173,3 +170,9 @@ Outputs:
   CronFunction:
     Description: Once every two days, look up pending list and send emails form there
     Value: !Ref CronFunction
+  AuthFunction:
+    Description: Handle register / login
+    Value: !Ref AuthFunction
+  HttpApiGateway:
+    Description: ApiGateway between front end requests and backend lambda
+    Value: !Ref HttpApiGateway
