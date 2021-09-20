@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { AuthClient } from '../clients/authClient'
 import { DocClient } from '../clients/docClient'
-import { AuthActions, IAuthRequest } from '../models/authRequest'
+import { AuthPaths, IAuthRequest } from '../models/authRequest'
 import { HttpFailure, HttpSuccess } from '../models/httpResponse'
 import { AuthService } from '../services/authService'
 
@@ -27,15 +27,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const request = JSON.parse(event.body) as IAuthRequest
     let response: APIGatewayProxyResult = null
-    switch (request.action) {
-      case AuthActions.register:
+    switch (event.path) {
+      case AuthPaths.register:
         response = await authService.register(request)
         break
-      case AuthActions.login:
+      case AuthPaths.login:
         response = await authService.login(request)
         break
       default:
-        response = new HttpFailure('Unrecognized action')
+        response = new HttpFailure()
+        response.statusCode = 404
         break
     }
 

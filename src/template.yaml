@@ -24,6 +24,11 @@ Parameters:
     Default: '{{resolve:ssm:sendgrid_apikey:1}}'
     AllowedValues:
       - '{{resolve:ssm:sendgrid_apikey:1}}'
+  DdbTable:
+    Type: String
+    Default: User
+    AllowedValues:
+      - User
 
 Globals:
   Function:
@@ -117,6 +122,40 @@ Resources:
             Description: "Once every 2 days send pending emails if within 3 days of send"
             Schedule: "cron(0 12 */2 * ? *)"
             Input: '{"CloudWatchEvent": true}'
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: functions/auth.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DdbTable
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsEvent:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsEvent:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: options
+            RestApiId: !Ref HttpApiGateway
 
 Outputs:
   HttpApiGateway:
