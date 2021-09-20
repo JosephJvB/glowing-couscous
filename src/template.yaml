@@ -9,11 +9,11 @@ Parameters:
     AllowedValues:
       - "true"
       - "false"
-  TopicName:
+  QueueName:
     Type: String
-    Default: LennieSns
+    Default: LennieQueue
     AllowedValues:
-      - LennieSns
+      - LennieQueue
   BucketName:
     Type: String
     Default: jvb-code
@@ -33,7 +33,6 @@ Globals:
     Environment:
       Variables:
         DEBUG: !Ref DEBUG
-        sns_arn: !Ref HttpSnsTopic
 
 Resources:
   # review: deployments were creating new gateways - new urls
@@ -47,23 +46,26 @@ Resources:
         AllowMethods: "*"
         AllowOrigin: "*"
 
-  HttpSnsTopic:
-    Type: AWS::SNS::Topic
+  HttpSqsQueue:
+    Type: AWS::SQS::Queue
     Properties:
-      DisplayName: !Ref TopicName
-      TopicName: !Ref TopicName
+      QueueName: !Ref QueueName
 
   # Permissions:
   # https://aws.amazon.com/premiumsupport/knowledge-center/lambda-sam-template-permissions/
   # https://github.com/aws/serverless-application-model/blob/develop/samtranslator/policy_templates_data/policy_templates.json
-  HttpSnsFunction:
+  HttpSqsFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Environment:
+        Variables:
+          sendgrid_apikey: !Ref SendGridApiKey
+          sqs_url: !Ref HttpSqsQueue
       CodeUri: ./dist
-      Handler: functions/http-sns.handler
+      Handler: functions/http-sqs.handler
       Policies:
-        - SNSPublishMessagePolicy:
-            TopicName: !Ref TopicName
+        - SQSSendMessagePolicy:
+            QueueName: !Ref QueueName
       Events:
         PostEvent:
           Type: Api
@@ -78,36 +80,36 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
-  SnsS3Function:
+  SqsS3Function:
     Type: AWS::Serverless::Function
     Properties:
+      Timeout: 60
+      MemorySize: 256
       CodeUri: ./dist
-      Handler: functions/sns-s3.handler
+      Handler: functions/sqs-s3.handler
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
       Events:
-        SnsEvent:
-          Type: SNS
+        SqsEvent:
+          Type: SQS
           Properties:
-            Topic: !Ref HttpSnsTopic
+            Queue: !GetAtt HttpSqsQueue.Arn
+            BatchSize: 500
+            MaximumBatchingWindowInSeconds: 120
 
-  SendEmailFunction:
+  CronFunction:
     Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           sendgrid_apikey: !Ref SendGridApiKey
       CodeUri: ./dist
-      Handler: functions/send-email.handler
+      Handler: functions/cron.handler
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref BucketName
       Events:
-        SnsEvent:
-          Type: SNS
-          Properties:
-            Topic: !Ref HttpSnsTopic
         CronEvent:
           Type: Schedule
           Properties:
@@ -120,15 +122,15 @@ Outputs:
   HttpApiGateway:
     Description: ApiGateway between front end requests and backend lambda
     Value: !Ref HttpApiGateway
-  HttpSnsTopic:
-    Description: Sns topic to decouple Http request from backend processes
-    Value: !Ref HttpSnsTopic
-  HttpSnsFunction:
-    Description: Respond to http requests at ApiGateway, send message on to SNS
-    Value: !Ref HttpSnsFunction
-  SnsS3Function:
-    Description: Write all email requests to json file in S3
-    Value: !Ref SnsS3Function
-  SendEmailFunction:
-    Description: Send email at request, or save to json. Also triggered by Schedule to send saved emails.
-    Value: !Ref SendEmailFunction
+  HttpSqsQueue:
+    Description: sqs queue to decouple Http request from backend processes
+    Value: !Ref HttpSqsQueue
+  HttpSqsFunction:
+    Description: Respond to http requests at ApiGateway, send message on to sqs, send email if sendAt immediate
+    Value: !Ref HttpSqsFunction
+  SqsS3Function:
+    Description: Pull batch from queue, write to s3
+    Value: !Ref SqsS3Function
+  CronFunction:
+    Description: Once every two days, look up pending list and send emails form there
+    Value: !Ref CronFunction
