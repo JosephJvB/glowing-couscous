@@ -9,7 +9,6 @@ const sqs = new SQS({
 })
 const emailClient = new EmailClient()
 
-
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     console.log('-------------')
@@ -19,7 +18,6 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log(event.httpMethod)
     console.log('--- body ---')
     console.log(event.body)
-
     if (event.httpMethod.toLowerCase() == 'options') {
       return new HttpSuccess()
     }
