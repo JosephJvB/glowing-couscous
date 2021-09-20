@@ -45,7 +45,7 @@ export class AuthService {
     newUser.salt = await this.auth.salt()
     newUser.hash = await this.auth.hash(newUser.password, newUser.salt)
 
-    // need sns to send email to verify registration
+    // need sns to send email to verify registration, ooh, do this from ddb stream!
     await this.doc.putUser(newUser)
     return new HttpSuccess('Register success')
   }

@@ -35,7 +35,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         response = await authService.login(request)
         break
       default:
-        response = new HttpFailure()
+        response = new HttpFailure('Request path not recognized ' + event.path)
         response.statusCode = 404
         break
     }
