@@ -1,11 +1,14 @@
 import { SQSEvent } from 'aws-lambda'
 import { S3 } from 'aws-sdk'
+import { EmailClient } from '../clients/emailClient'
 import { allRequestsKey, pendingRequestsKey, s3Bucket } from '../models/const'
 import { EmailRequest } from '../models/emailRequest'
 
 const s3 = new S3({
   region: 'ap-southeast-2'
 })
+const emailClient = new EmailClient()
+
 async function saveRequests(requests: EmailRequest[], s3Key: string) {
   console.log(
     `saveRequests=${requests.length}`,
@@ -52,7 +55,9 @@ export const handler = async (event: SQSEvent): Promise<void> => {
         continue
       }
       unique[request.uuid] = true
-      if (!request.sent) {
+      if (request.shouldSend) {
+        await emailClient.scheduleEmail(request.sendGridRequest)
+      } else {
         incomingPending.push(request)
       }
       incomingRequests.push(request)

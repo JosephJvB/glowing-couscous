@@ -1,13 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { SQS } from 'aws-sdk'
-import { EmailClient } from '../clients/emailClient'
 import { EmailRequest } from '../models/emailRequest'
 import { HttpFailure, HttpSuccess } from '../models/httpResponse'
 
 const sqs = new SQS({
   region: 'ap-southeast-2'
 })
-const emailClient = new EmailClient()
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
@@ -31,23 +29,14 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       }))
     }
 
-    const promises: Promise<any>[] = []
-    if (emailRequest.shouldSend) {
-      promises.push(emailClient.scheduleEmail(
-        emailRequest.sendGridRequest
-      ))
-      emailRequest.sent = true
-    }
-    promises.push(sqs.sendMessage({
+    await sqs.sendMessage({
       QueueUrl: process.env.sqs_url,
       MessageBody: JSON.stringify(emailRequest)
-    }).promise())
-    await Promise.all(promises)
+    }).promise()
   
     return new HttpSuccess(JSON.stringify({
-      message: 'success',
+      message: 'success, email queued',
       ts: emailRequest._ts,
-      status: emailRequest.sent ? 'sent' : 'scheduled'
     }))
   } catch (e) {
     console.error(e)

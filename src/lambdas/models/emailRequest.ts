@@ -9,7 +9,6 @@ export interface IEmailRequest {
   sendAt: number
   subject: string
   bodyText: string
-  sent: boolean
   _ts: number
 }
 export class EmailRequest implements IEmailRequest {
@@ -18,7 +17,6 @@ export class EmailRequest implements IEmailRequest {
   sendAt: number
   subject: string
   bodyText: string
-  sent: boolean
   _ts: number
   constructor(data: IEmailRequest) {
     this.templateId = data.templateId
@@ -26,7 +24,6 @@ export class EmailRequest implements IEmailRequest {
     this.sendAt = data.sendAt
     this.subject = data.subject
     this.bodyText = data.bodyText
-    this.sent = !!data.sent
     this._ts = data._ts
   }
 

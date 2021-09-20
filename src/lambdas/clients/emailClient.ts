@@ -19,6 +19,8 @@ export class EmailClient {
         Authorization: this.auth
       }
     })
+    // todo: handle rate limit
+    // https://docs.sendgrid.com/api-reference/how-to-use-the-sendgrid-v3-api/rate-limits
   }
 
   get auth(): string {

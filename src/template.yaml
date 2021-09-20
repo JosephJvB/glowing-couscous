@@ -83,6 +83,8 @@ Resources:
   SqsS3Function:
     Type: AWS::Serverless::Function
     Properties:
+      Timeout: 60
+      MemorySize: 256
       CodeUri: ./dist
       Handler: functions/sqs-s3.handler
       Policies:
