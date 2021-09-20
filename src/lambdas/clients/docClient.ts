@@ -5,7 +5,7 @@ import { IUser } from '../models/user'
 export class DocClient {
   client: DocumentClient
   constructor() {
-    AWS.config.update({ region: 'ap-souteast-2' })
+    AWS.config.update({ region: 'ap-southeast-2' })
     this.client = new AWS.DynamoDB.DocumentClient()
   }
 
