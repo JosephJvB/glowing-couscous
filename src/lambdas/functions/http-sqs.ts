@@ -1,11 +1,13 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { SNS } from 'aws-sdk'
+import { SQS } from 'aws-sdk'
+import { EmailClient } from '../clients/emailClient'
 import { EmailRequest } from '../models/emailRequest'
 import { HttpFailure, HttpSuccess } from '../models/httpResponse'
 
-const sns = new SNS({
+const sqs = new SQS({
   region: 'ap-southeast-2'
 })
+const emailClient = new EmailClient()
 
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -31,24 +33,27 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       }))
     }
 
-    console.log(
-      'sns.publish()',
-      `TopicArn=${process.env.sns_arn}`
-    )
-    await sns.publish({
-      Subject: 'LennieSNSEmailRequest',
-      Message: event.body,
-      TopicArn: process.env.sns_arn
-    }).promise()
-    console.log('sns.publish: success')
+    const promises: Promise<any>[] = []
+    if (emailRequest.shouldSend) {
+      promises.push(emailClient.scheduleEmail(
+        emailRequest.sendGridRequest
+      ))
+      emailRequest.sent = true
+    }
+    promises.push(sqs.sendMessage({
+      QueueUrl: process.env.sqs_url,
+      MessageBody: JSON.stringify(emailRequest)
+    }).promise())
+    await Promise.all(promises)
   
     return new HttpSuccess(JSON.stringify({
       message: 'success',
-      ts: emailRequest._ts
+      ts: emailRequest._ts,
+      status: emailRequest.sent ? 'sent' : 'scheduled'
     }))
   } catch (e) {
     console.error(e)
-    console.error('http-sns.handler failed')
+    console.error('http-sqs.handler failed')
     return new HttpFailure(e)
   }
 }

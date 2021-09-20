@@ -3,19 +3,30 @@ import { sendGridSender } from "./const"
 const daySec = 60 * 60 * 24
 const maxScheduletime = daySec * 3
 
-export class EmailRequest {
+export interface IEmailRequest {
   templateId: string
   email: string
   sendAt: number
   subject: string
   bodyText: string
+  sent: boolean
   _ts: number
-  constructor(data: EmailRequest) {
+}
+export class EmailRequest implements IEmailRequest {
+  templateId: string
+  email: string
+  sendAt: number
+  subject: string
+  bodyText: string
+  sent: boolean
+  _ts: number
+  constructor(data: IEmailRequest) {
     this.templateId = data.templateId
     this.email = data.email
     this.sendAt = data.sendAt
     this.subject = data.subject
     this.bodyText = data.bodyText
+    this.sent = !!data.sent
     this._ts = data._ts
   }
 
@@ -40,13 +51,13 @@ export class EmailRequest {
     sgr.subject = this.subject
 
     // sender must be sendgrid verified
-    const sender: SGRUser = {
+    const sender: ISGRUser = {
       email: sendGridSender
       // name: todo
     }
     sgr.from = sender
     sgr.reply_to = sender
-    const psn: Personalization = {
+    const psn: IPersonalization = {
       to: [{ email: this.email }]
     }
 
@@ -74,19 +85,19 @@ export class EmailRequest {
 }
 
 // https://docs.sendgrid.com/api-reference/mail-send/mail-send
-export interface SGRUser {
+export interface ISGRUser {
   email: string
   name?: string
 }
-export interface SGRContent {
+export interface ISGRContent {
   type: string
   value: string
 }
-export interface SGRTemplateData {
+export interface ISGRTemplateData {
   [key: string]: string
 }
-export interface Personalization {
-  to: SGRUser[]
+export interface IPersonalization {
+  to: ISGRUser[]
   dynamic_template_data?: {
     bodyText: string
     subject: string
@@ -96,8 +107,8 @@ export interface ISendGridRequest {
     subject: string
     send_at?: number
     template_id?: string
-    from: SGRUser
-    reply_to: SGRUser
-    personalizations: Personalization[]
-    content?: SGRContent[]
+    from: ISGRUser
+    reply_to: ISGRUser
+    personalizations: IPersonalization[]
+    content?: ISGRContent[]
 }
