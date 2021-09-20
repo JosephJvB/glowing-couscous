@@ -6,6 +6,6 @@ codeuri = "/Users/jvb-milk/WORKSPACE/joe/future.hellolennie/backend/src/dist"
 runtime = "nodejs14.x"
 source_md5 = ""
 packagetype = "Zip"
-functions = ["HttpSnsFunction", "SnsS3Function", "SendEmailFunction"]
+functions = ["HttpSqsFunction", "SqsS3Function", "CronFunction"]
 
 [layer_build_definitions]

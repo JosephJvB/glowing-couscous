@@ -30,6 +30,9 @@ export class EmailRequest implements IEmailRequest {
     this._ts = data._ts
   }
 
+  get uuid(): string {
+    return this.email + this._ts
+  }
   get isValid(): boolean {
     return !!this.email
   }

@@ -35,6 +35,9 @@ export const handler = async (event: SQSEvent): Promise<void> => {
       `records.length=${event.Records.length}`
     )
 
+    const unique: { // try avoid potential duplicates from sqs queue
+      [key: string]: boolean
+    } = {}
     const incomingRequests: EmailRequest[] = []
     const incomingPending: EmailRequest[] = []
     for (let i = 0; i < event.Records.length; i++) {
@@ -45,9 +48,10 @@ export const handler = async (event: SQSEvent): Promise<void> => {
       )
       const data: EmailRequest = JSON.parse(record.body)
       const request = new EmailRequest(data)
-      if (!request.isValid) {
+      if (!request.isValid || unique[request.uuid]) {
         continue
       }
+      unique[request.uuid] = true
       if (!request.sent) {
         incomingPending.push(request)
       }
