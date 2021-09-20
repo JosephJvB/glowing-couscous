@@ -14,16 +14,17 @@ const authService = new AuthService(
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.log('-------------')
-    console.log('--- event ---')
-    console.log(JSON.stringify(event))
-    console.log('--- method ---')
-    console.log(event.httpMethod)
-    console.log('--- body ---')
-    console.log(event.body)
+    console.log(
+      `method: ${event.httpMethod}`,
+      `path: ${event.path}`,
+    )
     if (event.httpMethod.toLowerCase() == 'options') {
       return new HttpSuccess()
     }
+    console.log('--- event ---')
+    console.log(JSON.stringify(event))
+    console.log('--- body ---')
+    console.log(event.body)
 
     const request = JSON.parse(event.body) as IAuthRequest
     let response: APIGatewayProxyResult = null
@@ -40,10 +41,12 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         break
     }
 
+    console.log('--- response ---')
+    console.log(JSON.stringify(response))
     return response
   } catch (e) {
     console.error(e)
-    console.error('auth.handler failed')
+    console.error('http-auth.handler failed')
     return new HttpFailure(e)
   }
 }

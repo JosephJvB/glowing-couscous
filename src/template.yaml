@@ -122,7 +122,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
-      Handler: functions/auth.handler
+      Handler: functions/http-auth.handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTable

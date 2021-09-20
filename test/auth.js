@@ -1,14 +1,16 @@
+const action = 'login'
+// const action = 'register'
 const data = {
   email: 'joevanbo+authlocal@gmail.com',
   password: 'samcooke123'
 }
 
-// local using milk creds cant access joevanbo@gmail.com dynamodb
+// local using milk creds cant access joevanbo@gmail.com dynamodb resource
 // local()
 lambda()
 function lambda() {
   const axios = require('axios')
-  const url = 'https://krr0kjmhs8.execute-api.ap-southeast-2.amazonaws.com/v1/login'
+  const url = 'https://krr0kjmhs8.execute-api.ap-southeast-2.amazonaws.com/v1/' + action
   axios({
     method: 'post',
     url,

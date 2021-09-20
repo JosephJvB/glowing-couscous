@@ -9,7 +9,7 @@ export interface IEmailRequest {
   sendAt: number
   subject: string
   bodyText: string
-  _ts: number
+  created: number
 }
 export class EmailRequest implements IEmailRequest {
   templateId: string
@@ -17,18 +17,18 @@ export class EmailRequest implements IEmailRequest {
   sendAt: number
   subject: string
   bodyText: string
-  _ts: number
+  created: number
   constructor(data: IEmailRequest) {
     this.templateId = data.templateId
     this.email = data.email
     this.sendAt = data.sendAt
     this.subject = data.subject
     this.bodyText = data.bodyText
-    this._ts = data._ts
+    this.created = data.created
   }
 
   get uuid(): string {
-    return this.email + this._ts
+    return this.email + this.created
   }
   get isValid(): boolean {
     return !!this.email

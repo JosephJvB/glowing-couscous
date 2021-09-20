@@ -9,20 +9,22 @@ const sqs = new SQS({
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.log('-------------')
-    console.log('--- event ---')
-    console.log(JSON.stringify(event))
-    console.log('--- method ---')
-    console.log(event.httpMethod)
-    console.log('--- body ---')
-    console.log(event.body)
+    console.log(
+      `method: ${event.httpMethod}`,
+      `path: ${event.path}`,
+    )
     if (event.httpMethod.toLowerCase() == 'options') {
       return new HttpSuccess()
     }
+    console.log('--- event ---')
+    console.log(JSON.stringify(event))
+    console.log('--- body ---')
+    console.log(event.body)
 
     const emailRequest = new EmailRequest(JSON.parse(event.body))
-    emailRequest._ts = Date.now()
+    emailRequest.created = Date.now()
     if (!emailRequest.isValid) {
+      console.warn('Invalid email request', JSON.stringify(emailRequest))
       return new HttpFailure(JSON.stringify({
         message: 'Invalid email request',
         data: emailRequest
@@ -34,10 +36,13 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       MessageBody: JSON.stringify(emailRequest)
     }).promise()
   
-    return new HttpSuccess(JSON.stringify({
+    const response = new HttpSuccess(JSON.stringify({
       message: 'Success, email queued',
-      ts: emailRequest._ts,
+      createdTimestamp: emailRequest.created,
     }))
+    console.log('--- response ---')
+    console.log(JSON.stringify(response))
+    return response
   } catch (e) {
     console.error(e)
     console.error('http-sqs.handler failed')
