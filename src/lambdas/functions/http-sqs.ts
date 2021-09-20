@@ -35,7 +35,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }).promise()
   
     return new HttpSuccess(JSON.stringify({
-      message: 'success, email queued',
+      message: 'Success, email queued',
       ts: emailRequest._ts,
     }))
   } catch (e) {

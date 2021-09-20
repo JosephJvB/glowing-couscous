@@ -15,7 +15,7 @@ export const CorsHeaders: ICorsHeaders = {
   "Access-Control-Allow-Origin": "*",
 }
 // node_modules/@types/aws-lambda/trigger/api-gateway-proxy.d.ts
-abstract class HttpResponse implements APIGatewayProxyResult {
+export abstract class HttpResponse implements APIGatewayProxyResult {
   statusCode: number
   body: string
   headers?: {
