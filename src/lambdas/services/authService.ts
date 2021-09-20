@@ -40,10 +40,10 @@ export class AuthService {
 
     const newUser: IUser = {
       email: request.email,
-      password: request.password,
+      created: Date.now()
     }
     newUser.salt = await this.auth.salt()
-    newUser.hash = await this.auth.hash(newUser.password, newUser.salt)
+    newUser.hash = await this.auth.hash(request.password, newUser.salt)
 
     // need sns to send email to verify registration, ooh, do this from ddb stream!
     await this.doc.putUser(newUser)
