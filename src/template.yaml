@@ -24,11 +24,6 @@ Parameters:
     Default: '{{resolve:ssm:sendgrid_apikey:1}}'
     AllowedValues:
       - '{{resolve:ssm:sendgrid_apikey:1}}'
-  DdbTable:
-    Type: String
-    Default: User
-    AllowedValues:
-      - User
 
 Globals:
   Function:
@@ -130,7 +125,7 @@ Resources:
       Handler: functions/auth.handler
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref DdbTable
+            TableName: !Ref UserTable
       Events:
         PostEvent:
           Type: Api
@@ -157,6 +152,20 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: User
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
 Outputs:
   HttpSqsQueue:
     Description: sqs queue to decouple Http request from backend processes
@@ -173,6 +182,9 @@ Outputs:
   AuthFunction:
     Description: Handle register / login
     Value: !Ref AuthFunction
+  UserTable:
+    Description: Store user records in nosql
+    Value: !Ref UserTable
   HttpApiGateway:
     Description: ApiGateway between front end requests and backend lambda
     Value: !Ref HttpApiGateway
