@@ -127,25 +127,25 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTable
       Events:
-        PostEvent:
+        PostLogin:
           Type: Api
           Properties:
             Path: /login
             Method: post
             RestApiId: !Ref HttpApiGateway
-        OptionsEvent:
+        OptionsLogin:
           Type: Api
           Properties:
             Path: /login
             Method: options
             RestApiId: !Ref HttpApiGateway
-        PostEvent:
+        PostRegister:
           Type: Api
           Properties:
             Path: /register
             Method: post
             RestApiId: !Ref HttpApiGateway
-        OptionsEvent:
+        OptionsRegister:
           Type: Api
           Properties:
             Path: /register
