@@ -118,10 +118,55 @@ Resources:
             Schedule: "cron(0 12 */2 * ? *)"
             Input: '{"CloudWatchEvent": true}'
 
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: functions/http-auth.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UserTable
+      Events:
+        PostLogin:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsLogin:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+        PostRegister:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsRegister:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: User
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
 Outputs:
-  HttpApiGateway:
-    Description: ApiGateway between front end requests and backend lambda
-    Value: !Ref HttpApiGateway
   HttpSqsQueue:
     Description: sqs queue to decouple Http request from backend processes
     Value: !Ref HttpSqsQueue
@@ -134,3 +179,12 @@ Outputs:
   CronFunction:
     Description: Once every two days, look up pending list and send emails form there
     Value: !Ref CronFunction
+  AuthFunction:
+    Description: Handle register / login
+    Value: !Ref AuthFunction
+  UserTable:
+    Description: Store user records in nosql
+    Value: !Ref UserTable
+  HttpApiGateway:
+    Description: ApiGateway between front end requests and backend lambda
+    Value: !Ref HttpApiGateway

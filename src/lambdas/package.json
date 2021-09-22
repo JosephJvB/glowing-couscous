@@ -15,10 +15,12 @@
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
     "@types/aws-lambda": "^8.10.83",
+    "@types/bcryptjs": "^2.4.2",
     "@types/node": "^16.9.1",
     "aws-sdk": "^2.987.0"
   },
   "dependencies": {
-    "axios": "^0.21.4"
+    "axios": "^0.21.4",
+    "bcryptjs": "^2.4.3"
   }
 }
