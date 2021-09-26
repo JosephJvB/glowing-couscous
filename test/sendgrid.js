@@ -5,6 +5,7 @@ const templateId = 'd-c9fb10c0dd984cd49da8e209cd032b94'
 // using Twilio SendGrid's v3 Node.js Library
 // https://github.com/sendgrid/sendgrid-nodejs
 // https://docs.sendgrid.com/api-reference/mail-send/mail-send
+// i wonder if there is a batch send api?
 
 // prefer to use sendGrid sdk. It does scheduling.
 // Only swap to http requests if sdk can't handle templating

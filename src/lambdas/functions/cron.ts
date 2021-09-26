@@ -18,6 +18,9 @@ export const handler = async (): Promise<void> => {
       Key: pendingRequestsKey,
     }).promise()
     const requests: EmailRequest[] = JSON.parse(obj.Body.toString())
+    console.log(
+      `pendingRequests.length=${requests.length}`
+    )
     const unsent: EmailRequest[] = []
     for (const r of requests) {
       if (r.shouldSend) {
@@ -26,14 +29,17 @@ export const handler = async (): Promise<void> => {
         unsent.push(r)
       }
     }
+    console.log(
+      `next: pendingRequests.length=${unsent.length}`
+    )
     await s3.putObject({
       Bucket: s3Bucket,
       Key: pendingRequestsKey,
       Body: JSON.stringify(unsent)
     })
-    console.log('sqs-s3.handler success')
+    console.log('cronfn.handler success')
   } catch (e) {
     console.error(e)
-    console.error('sqs-s3.handler failed')
+    console.error('cronfn.handler failed')
   }
 }

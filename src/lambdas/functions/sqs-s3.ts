@@ -43,6 +43,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     } = {}
     const incomingRequests: EmailRequest[] = []
     const incomingPending: EmailRequest[] = []
+    const emailSendRequests: Promise<void>[] = []
     for (let i = 0; i < event.Records.length; i++) {
       const record = event.Records[i]
       console.log(
@@ -56,7 +57,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
       }
       unique[request.uuid] = true
       if (request.shouldSend) {
-        await emailClient.scheduleEmail(request.sendGridRequest)
+        emailSendRequests.push(emailClient.scheduleEmail(request.sendGridRequest))
       } else {
         incomingPending.push(request)
       }
@@ -68,6 +69,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     )
 
     await Promise.all([
+      ...emailSendRequests,
       saveRequests(incomingRequests, allRequestsKey),
       saveRequests(incomingPending, pendingRequestsKey),
     ])
